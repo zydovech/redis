@@ -28,7 +28,7 @@
  */
 
 #ifndef __RDB_H
-#define __RDB_H
+#define __RDB_H         
 
 #include <stdio.h>
 #include "rio.h"

@@ -1225,9 +1225,9 @@ werr:
 int rewriteAppendOnlyFile(char *filename) {
     rio aof;
     FILE *fp;
-    char tmpfile[256];
+    char tmpfile[256]; 
     char byte;
-
+    
     /* Note that we have to use a different temp name here compared to the
      * one used by rewriteAppendOnlyFileBackground() function. */
     snprintf(tmpfile,256,"temp-rewriteaof-%d.aof", (int) getpid());

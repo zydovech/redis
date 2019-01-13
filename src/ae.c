@@ -46,6 +46,7 @@
 
 /* Include the best multiplexing layer supported by this system.
  * The following should be ordered by performances, descending. */
+//根据不同的系统�择不同的多路复用方式，�能依次下降
 #ifdef HAVE_EVPORT
 #include "ae_evport.c"
 #else
@@ -59,7 +60,7 @@
         #endif
     #endif
 #endif
-
+//redis有一个maxclient的参数��就是对应的值加�8
 aeEventLoop *aeCreateEventLoop(int setsize) {
     aeEventLoop *eventLoop;
     int i;
@@ -76,10 +77,10 @@ aeEventLoop *aeCreateEventLoop(int setsize) {
     eventLoop->maxfd = -1;
     eventLoop->beforesleep = NULL;
     eventLoop->aftersleep = NULL;
-    if (aeApiCreate(eventLoop) == -1) goto err;
+    //创建底层使用的多路复用技�   if (aeApiCreate(eventLoop) == -1) goto err;
     /* Events with mask == AE_NONE are not set. So let's initialize the
      * vector with it. */
-    for (i = 0; i < setsize; i++)
+    //初始化事�   for (i = 0; i < setsize; i++)
         eventLoop->events[i].mask = AE_NONE;
     return eventLoop;
 
@@ -133,11 +134,16 @@ void aeStop(aeEventLoop *eventLoop) {
     eventLoop->stop = 1;
 }
 
+
+/**
+ * eventLoop:�¼�����ͷ��
+ * fd:Ҫ��ӵ�fd
+ * proc:�ļ�������
+ */
 int aeCreateFileEvent(aeEventLoop *eventLoop, int fd, int mask,
         aeFileProc *proc, void *clientData)
 {
-    if (fd >= eventLoop->setsize) {
-        errno = ERANGE;
+    if (fd >= eventLoop->setsize) {// setsize��ʾ��������..���fd����������
         return AE_ERR;
     }
     aeFileEvent *fe = &eventLoop->events[fd];
@@ -248,6 +254,7 @@ int aeDeleteTimeEvent(aeEventLoop *eventLoop, long long id)
  *    Much better but still insertion or deletion of timers is O(N).
  * 2) Use a skiplist to have this operation as O(1) and insertion as O(log(N)).
  */
+//遍历列表，查找最近到期的时间事件。�当前时间复杂度为O(n)的��可以使用算法进行优�/没有时间事件的话，则返回NULL
 static aeTimeEvent *aeSearchNearestTimer(aeEventLoop *eventLoop)
 {
     aeTimeEvent *te = eventLoop->timeEventHead;
@@ -350,13 +357,13 @@ static int processTimeEvents(aeEventLoop *eventLoop) {
  * if flags has AE_DONT_WAIT set the function returns ASAP until all
  * if flags has AE_CALL_AFTER_SLEEP set, the aftersleep callback is called.
  * the events that's possible to process without to wait are processed.
- *
+ * 
  * The function returns the number of events processed. */
 int aeProcessEvents(aeEventLoop *eventLoop, int flags)
 {
     int processed = 0, numevents;
 
-    /* Nothing to do? return ASAP */
+    /* Nothing to do? return ASAP as soon as prossible*/
     if (!(flags & AE_TIME_EVENTS) && !(flags & AE_FILE_EVENTS)) return 0;
 
     /* Note that we want call select() even if there are no
@@ -370,10 +377,11 @@ int aeProcessEvents(aeEventLoop *eventLoop, int flags)
         struct timeval tv, *tvp;
 
         if (flags & AE_TIME_EVENTS && !(flags & AE_DONT_WAIT))
-            shortest = aeSearchNearestTimer(eventLoop);
-        if (shortest) {
+              shortest = aeSearchNearestTimer(eventLoop);
+        if (shortest) {//
+            //
             long now_sec, now_ms;
-
+            
             aeGetTime(&now_sec, &now_ms);
             tvp = &tv;
 
@@ -395,10 +403,11 @@ int aeProcessEvents(aeEventLoop *eventLoop, int flags)
              * ASAP because of AE_DONT_WAIT we need to set the timeout
              * to zero */
             if (flags & AE_DONT_WAIT) {
+             
                 tv.tv_sec = tv.tv_usec = 0;
                 tvp = &tv;
             } else {
-                /* Otherwise we can block */
+                               /* Otherwise we can block */
                 tvp = NULL; /* wait forever */
             }
         }
@@ -408,21 +417,23 @@ int aeProcessEvents(aeEventLoop *eventLoop, int flags)
         numevents = aeApiPoll(eventLoop, tvp);
 
         /* After sleep callback. */
+        //
         if (eventLoop->aftersleep != NULL && flags & AE_CALL_AFTER_SLEEP)
             eventLoop->aftersleep(eventLoop);
 
         for (j = 0; j < numevents; j++) {
             aeFileEvent *fe = &eventLoop->events[eventLoop->fired[j].fd];
             int mask = eventLoop->fired[j].mask;
+       
             int fd = eventLoop->fired[j].fd;
             int fired = 0; /* Number of events fired for current fd. */
 
+            //
             /* Normally we execute the readable event first, and the writable
              * event laster. This is useful as sometimes we may be able
              * to serve the reply of a query immediately after processing the
              * query.
-             *
-             * However if AE_BARRIER is set in the mask, our application is
+             *             * However if AE_BARRIER is set in the mask, our application is
              * asking us to do the reverse: never fire the writable event
              * after the readable. In such a case, we invert the calls.
              * This is useful when, for instance, we want to do things
@@ -463,6 +474,7 @@ int aeProcessEvents(aeEventLoop *eventLoop, int flags)
     }
     /* Check time events */
     if (flags & AE_TIME_EVENTS)
+  
         processed += processTimeEvents(eventLoop);
 
     return processed; /* return the number of processed file/time events */
@@ -494,7 +506,7 @@ void aeMain(aeEventLoop *eventLoop) {
     eventLoop->stop = 0;
     while (!eventLoop->stop) {
         if (eventLoop->beforesleep != NULL)
-            eventLoop->beforesleep(eventLoop);
+             eventLoop->beforesleep(eventLoop);
         aeProcessEvents(eventLoop, AE_ALL_EVENTS|AE_CALL_AFTER_SLEEP);
     }
 }

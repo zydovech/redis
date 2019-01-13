@@ -108,7 +108,7 @@ int anetKeepAlive(char *err, int fd, int interval)
      * actually useful. */
 
     /* Send first probe after interval. */
-    val = interval;
+    val = interval; //设置探测的评率。。多久进行一次keeplive TCP_KEEPIDLE设定的是tcp_keepalive_time的值，发送keepalive的频率
     if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPIDLE, &val, sizeof(val)) < 0) {
         anetSetError(err, "setsockopt TCP_KEEPIDLE: %s\n", strerror(errno));
         return ANET_ERR;
@@ -118,7 +118,7 @@ int anetKeepAlive(char *err, int fd, int interval)
      * delay as interval / 3, as we send three probes before detecting
      * an error (see the next setsockopt call). */
     val = interval/3;
-    if (val == 0) val = 1;
+    if (val == 0) val = 1; //设置当探测没有回应的时候，重新发送探测的频率。。就是发送了keepalive之后，TCP_KEEPINTVL时间间隔后，再发送一次  /proc/sys/net/ipv4/tcp_keepalive_intvl
     if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPINTVL, &val, sizeof(val)) < 0) {
         anetSetError(err, "setsockopt TCP_KEEPINTVL: %s\n", strerror(errno));
         return ANET_ERR;
@@ -126,7 +126,8 @@ int anetKeepAlive(char *err, int fd, int interval)
 
     /* Consider the socket in error state after three we send three ACK
      * probes without getting a reply. */
-    val = 3;
+    val = 3; //设置为3.。代表每次连续三次keepalive后，还没有回应。则断开连接 /proc/sys/net/ipv4/tcp_keepalive_probes
+
     if (setsockopt(fd, IPPROTO_TCP, TCP_KEEPCNT, &val, sizeof(val)) < 0) {
         anetSetError(err, "setsockopt TCP_KEEPCNT: %s\n", strerror(errno));
         return ANET_ERR;

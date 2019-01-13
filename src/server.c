@@ -2162,8 +2162,8 @@ void alsoPropagate(struct redisCommand *cmd, int dbid, robj **argv, int argc,
 /* It is possible to call the function forceCommandPropagation() inside a
  * Redis command implementation in order to to force the propagation of a
  * specific command execution into AOF / Replication. */
-void forceCommandPropagation(client *c, int flags) {
-    if (flags & PROPAGATE_REPL) c->flags |= CLIENT_FORCE_REPL;
+void forceCommandPropagation(client *c, int flags) { 
+    if (flags & PROPAGATE_REPL) c->flags |= CLIENT_FORCE_REPL; //TODO 这个地方是作何考虑？
     if (flags & PROPAGATE_AOF) c->flags |= CLIENT_FORCE_AOF;
 }
 
@@ -2188,14 +2188,14 @@ void preventCommandReplication(client *c) {
  *
  * The following flags can be passed:
  * CMD_CALL_NONE        No flags.
- * CMD_CALL_SLOWLOG     Check command speed and log in the slow log if needed.
- * CMD_CALL_STATS       Populate command stats.
+ * CMD_CALL_SLOWLOG     Check command speed and log in the slow log if needed. //检查命令的执行时间，如果需要的话，记录在慢日志中
+ * CMD_CALL_STATS       Populate command stats. //记录命令的统计信息
  * CMD_CALL_PROPAGATE_AOF   Append command to AOF if it modified the dataset
- *                          or if the client flags are forcing propagation.
+ *                          or if the client flags are forcing propagation. //如果命令修改了数据集或者client设置了强制传播的标识，则追加到AOF日志中
  * CMD_CALL_PROPAGATE_REPL  Send command to salves if it modified the dataset
- *                          or if the client flags are forcing propagation.
- * CMD_CALL_PROPAGATE   Alias for PROPAGATE_AOF|PROPAGATE_REPL.
- * CMD_CALL_FULL        Alias for SLOWLOG|STATS|PROPAGATE.
+ *                          or if the client flags are forcing propagation. //如果修改了数据集或者client设置了强制传播的标识，则发送command到salve中
+ * CMD_CALL_PROPAGATE   Alias for PROPAGATE_AOF|PROPAGATE_REPL. //标识同时需要CMD_CALL_PROPAGATE_AOF和CMD_CALL_PROPAGATE_REPL
+ * CMD_CALL_FULL        Alias for SLOWLOG|STATS|PROPAGATE. //所有的标记都有
  *
  * The exact propagation behavior depends on the client flags.
  * Specifically:
@@ -2203,10 +2203,10 @@ void preventCommandReplication(client *c) {
  * 1. If the client flags CLIENT_FORCE_AOF or CLIENT_FORCE_REPL are set
  *    and assuming the corresponding CMD_CALL_PROPAGATE_AOF/REPL is set
  *    in the call flags, then the command is propagated even if the
- *    dataset was not affected by the command.
+ *    dataset was not affected by the command. 如果client中有CLIENT_FORCE_AOF和CLIENT_FORCE_REPL。且假设对应的CMD_CALL_PROPAGATE_AOF/REPL也设置了，则即使命令没有对数据集照成影响，也会进行传播
  * 2. If the client flags CLIENT_PREVENT_REPL_PROP or CLIENT_PREVENT_AOF_PROP
  *    are set, the propagation into AOF or to slaves is not performed even
- *    if the command modified the dataset.
+ *    if the command modified the dataset. //如果CLIENT_PREVENT_REPL_PROP和CLIENT_PREVENT_REPL_PROP设置了，则肯定不会进行传播
  *
  * Note that regardless of the client flags, if CMD_CALL_PROPAGATE_AOF
  * or CMD_CALL_PROPAGATE_REPL are not set, then respectively AOF or
@@ -2353,20 +2353,20 @@ int processCommand(client *c) {
      * a regular command proc. */
     if (!strcasecmp(c->argv[0]->ptr,"quit")) {
         addReply(c,shared.ok);
-        c->flags |= CLIENT_CLOSE_AFTER_REPLY;
+        c->flags |= CLIENT_CLOSE_AFTER_REPLY; //设置
         return C_ERR;
     }
 
     /* Now lookup the command and check ASAP about trivial error conditions
      * such as wrong arity, bad command name and so forth. */
-    c->cmd = c->lastcmd = lookupCommand(c->argv[0]->ptr);
-    if (!c->cmd) {
+    c->cmd = c->lastcmd = lookupCommand(c->argv[0]->ptr); //寻找对应的命令
+    if (!c->cmd) { //看是否找到了处理的命令，找不到的命令不会导致客户端关闭
         flagTransaction(c);
         addReplyErrorFormat(c,"unknown command '%s'",
             (char*)c->argv[0]->ptr);
         return C_OK;
     } else if ((c->cmd->arity > 0 && c->cmd->arity != c->argc) ||
-               (c->argc < -c->cmd->arity)) {
+               (c->argc < -c->cmd->arity)) { //参数个数是否匹配
         flagTransaction(c);
         addReplyErrorFormat(c,"wrong number of arguments for '%s' command",
             c->cmd->name);
@@ -2374,29 +2374,29 @@ int processCommand(client *c) {
     }
 
     /* Check if the user is authenticated */
-    if (server.requirepass && !c->authenticated && c->cmd->proc != authCommand)
+    if (server.requirepass && !c->authenticated && c->cmd->proc != authCommand) //如果需要auth ,还没有认证过，则第一个命令应该是authCommand
     {
         flagTransaction(c);
         addReply(c,shared.noautherr);
         return C_OK;
     }
 
-    /* If cluster is enabled perform the cluster redirection here.
-     * However we don't perform the redirection if:
-     * 1) The sender of this command is our master.
+    /* If cluster is enabled perform the cluster redirection here. 如果开启了集群模式，则执行集群的重定向操作，
+     * However we don't perform the redirection if: 下面两种情况例外的
+     * 1) The sender of this command is our master. 如果client表示的是master(就是master连上了其他master或者slave)
      * 2) The command has no key arguments. */
     if (server.cluster_enabled &&
         !(c->flags & CLIENT_MASTER) &&
         !(c->flags & CLIENT_LUA &&
           server.lua_caller->flags & CLIENT_MASTER) &&
         !(c->cmd->getkeys_proc == NULL && c->cmd->firstkey == 0 &&
-          c->cmd->proc != execCommand))
+          c->cmd->proc != execCommand)) //也就是说execCommand也会到这里面来进行处理，如果是execCommand的话，则根据啥来选择node的？
     {
         int hashslot;
         int error_code;
         clusterNode *n = getNodeByQuery(c,c->cmd,c->argv,c->argc,
                                         &hashslot,&error_code);
-        if (n == NULL || n != server.cluster->myself) {
+        if (n == NULL || n != server.cluster->myself) {//如果不是
             if (c->cmd->proc == execCommand) {
                 discardTransaction(c);
             } else {
@@ -2412,7 +2412,7 @@ int processCommand(client *c) {
      * First we try to free some memory if possible (if there are volatile
      * keys in the dataset). If there are not the only thing we can do
      * is returning an error. */
-    if (server.maxmemory) {
+    if (server.maxmemory) { //设置了最大内存的限制
         int retval = freeMemoryIfNeeded();
         /* freeMemoryIfNeeded may flush slave output buffers. This may result
          * into a slave, that may be the active client, to be freed. */

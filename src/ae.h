@@ -69,39 +69,61 @@ typedef void aeBeforeSleepProc(struct aeEventLoop *eventLoop);
 
 /* File event structure */
 typedef struct aeFileEvent {
+    //文件事件类型
     int mask; /* one of AE_(READABLE|WRITABLE|BARRIER) */
+    //可读事件处理回调函数。。
     aeFileProc *rfileProc;
+    //可写事件处理回调函数
     aeFileProc *wfileProc;
+    //客户端数据
     void *clientData;
 } aeFileEvent;
 
 /* Time event structure */
 typedef struct aeTimeEvent {
+    //事件事件的ID
     long long id; /* time event identifier. */
+    //时间事件到期的秒数
     long when_sec; /* seconds */
+    //毫秒数
     long when_ms; /* milliseconds */
+    //时间事件发生后的回调函数
     aeTimeProc *timeProc;
+    //时间事件终结函数
     aeEventFinalizerProc *finalizerProc;
+    //客户端数据
     void *clientData;
+    //下一个时间事件
     struct aeTimeEvent *next;
 } aeTimeEvent;
 
-/* A fired event */
+/* A fired event 就绪的事件类型*/
 typedef struct aeFiredEvent {
+    //就绪事件的文件描述符
     int fd;
+    //就绪的事件类型，AE_READABLE,AE_WRITEABLE
     int mask;
 } aeFiredEvent;
 
 /* State of an event based program */
 typedef struct aeEventLoop {
+    //当前系统以及注册的最大的fd
     int maxfd;   /* highest file descriptor currently registered */
+    //文件描述符监听集合的大小
     int setsize; /* max number of file descriptors tracked */
+    //下一个时间事件的id
     long long timeEventNextId;
+    //最后一次执行事件的时间
     time_t lastTime;     /* Used to detect system clock skew */
+    //注册的文件事件表。。指向数组的开头。。数组的下标就是fd
     aeFileEvent *events; /* Registered events */
+    //已经就绪的文件事件表
     aeFiredEvent *fired; /* Fired events */
+    //时间事件的头指针
     aeTimeEvent *timeEventHead;
+    //处理开关
     int stop;
+    //一些多用复用库的数据。。在ae_epoll.c中的aeApiState
     void *apidata; /* This is used for polling API specific data */
     aeBeforeSleepProc *beforesleep;
     aeBeforeSleepProc *aftersleep;

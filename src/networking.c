@@ -76,7 +76,7 @@ void linkClient(client *c) {
      * a linear scan, but just a constant time operation. */
     c->client_list_node = listLast(server.clients);
 }
-
+//创建一个客户端
 client *createClient(int fd) {
     client *c = zmalloc(sizeof(client));
 
@@ -87,10 +87,10 @@ client *createClient(int fd) {
     if (fd != -1) {
         anetNonBlock(NULL,fd);
         anetEnableTcpNoDelay(NULL,fd);
-        if (server.tcpkeepalive)
+        if (server.tcpkeepalive) //如果带有keepalive参数的话，则进行keepalvie的设置，主要设置开启keepalive 以及发送的频率，发送了之后不断检测的评率，以及次数TCP_KEEPCNT、TCP_KEEPIDEL、TCP_KEEPINTVAL
             anetKeepAlive(NULL,fd,server.tcpkeepalive);
         if (aeCreateFileEvent(server.el,fd,AE_READABLE,
-            readQueryFromClient, c) == AE_ERR)
+            readQueryFromClient, c) == AE_ERR) //把fd的可读事件,加入到eventloop中
         {
             close(fd);
             zfree(c);
@@ -642,7 +642,8 @@ int clientHasPendingReplies(client *c) {
 #define MAX_ACCEPTS_PER_CALL 1000
 static void acceptCommonHandler(int fd, int flags, char *ip) {
     client *c;
-    if ((c = createClient(fd)) == NULL) {
+    if ((c = createClient(fd)) == NULL) { //创建一个client客户端，对结构体进行初始化，并添加到clients链表中
+
         serverLog(LL_WARNING,
             "Error registering fd event for the new client: %s (fd=%d)",
             strerror(errno),fd);
@@ -657,7 +658,7 @@ static void acceptCommonHandler(int fd, int flags, char *ip) {
         char *err = "-ERR max number of clients reached\r\n";
 
         /* That's a best effort error message, don't check write errors */
-        if (write(c->fd,err,strlen(err)) == -1) {
+        if (write(c->fd,err,strlen(err)) == -1) { //尽全力写数据到连接的客户端
             /* Nothing to do, Just to avoid the warning... */
         }
         server.stat_rejected_conn++;
@@ -1346,9 +1347,9 @@ int processMultibulkBuffer(client *c) {
  * or because a client was blocked and later reactivated, so there could be
  * pending query buffer, already representing a full command, to process. */
 void processInputBuffer(client *c) {
-    server.current_client = c;
+    server.current_client = c; //设置当前的客户端为c
     /* Keep processing while there is something in the input buffer */
-    while(sdslen(c->querybuf)) {
+    while(sdslen(c->querybuf)) { //如果querybuf里面有数据，则一直处理
         /* Return if clients are paused. */
         if (!(c->flags & CLIENT_SLAVE) && clientsArePaused()) break;
 
@@ -1363,8 +1364,8 @@ void processInputBuffer(client *c) {
         if (c->flags & (CLIENT_CLOSE_AFTER_REPLY|CLIENT_CLOSE_ASAP)) break;
 
         /* Determine request type when unknown. */
-        if (!c->reqtype) {
-            if (c->querybuf[0] == '*') {
+        if (!c->reqtype) { //来决定请求的类型
+            if (c->querybuf[0] == '*') { //正常的客户端请求，第一个都是*
                 c->reqtype = PROTO_REQ_MULTIBULK;
             } else {
                 c->reqtype = PROTO_REQ_INLINE;
@@ -1405,7 +1406,10 @@ void processInputBuffer(client *c) {
     }
     server.current_client = NULL;
 }
-
+/* el:事件循环体，
+* fd:发生可读事件的fd
+* privdata: 就是client结构体
+*/
 void readQueryFromClient(aeEventLoop *el, int fd, void *privdata, int mask) {
     client *c = (client*) privdata;
     int nread, readlen;
@@ -1433,14 +1437,14 @@ void readQueryFromClient(aeEventLoop *el, int fd, void *privdata, int mask) {
     c->querybuf = sdsMakeRoomFor(c->querybuf, readlen);
     nread = read(fd, c->querybuf+qblen, readlen);
     if (nread == -1) {
-        if (errno == EAGAIN) {
+        if (errno == EAGAIN) { //无资源可读，则返回
             return;
         } else {
             serverLog(LL_VERBOSE, "Reading from client: %s",strerror(errno));
             freeClient(c);
             return;
         }
-    } else if (nread == 0) {
+    } else if (nread == 0) { //返回0，代表读到了结束，
         serverLog(LL_VERBOSE, "Client closed connection");
         freeClient(c);
         return;
@@ -1453,10 +1457,11 @@ void readQueryFromClient(aeEventLoop *el, int fd, void *privdata, int mask) {
     }
 
     sdsIncrLen(c->querybuf,nread);
-    c->lastinteraction = server.unixtime;
-    if (c->flags & CLIENT_MASTER) c->read_reploff += nread;
-    server.stat_net_input_bytes += nread;
-    if (sdslen(c->querybuf) > server.client_max_querybuf_len) {
+    c->lastinteraction = server.unixtime; //设置和服务器交互的时间
+    if (c->flags & CLIENT_MASTER) c->read_reploff += nread;      // 如果是主节点，则更新复制操作的偏移量
+
+    server.stat_net_input_bytes += nread;  // 更新从网络输入的字节数
+    if (sdslen(c->querybuf) > server.client_max_querybuf_len) { //如果querybuf中的数据量大于了client_max_querybuf_len，则关闭
         sds ci = catClientInfoString(sdsempty(),c), bytes = sdsempty();
 
         bytes = sdscatrepr(bytes,c->querybuf,64);
@@ -2044,7 +2049,7 @@ void pauseClients(mstime_t end) {
  * function checks if the pause time was reached and clear it. */
 int clientsArePaused(void) {
     if (server.clients_paused &&
-        server.clients_pause_end_time < server.mstime)
+        server.clients_pause_end_time < server.mstime)  //到达时间了
     {
         listNode *ln;
         listIter li;

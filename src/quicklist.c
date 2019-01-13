@@ -1441,8 +1441,8 @@ void quicklistPush(quicklist *quicklist, void *value, const size_t sz,
         err++;                                                                 \
     } while (0)
 
-#define TEST(name) printf("test â€” %s\n", name);
-#define TEST_DESC(name, ...) printf("test â€” " name "\n", __VA_ARGS__);
+#define TEST(name) printf("test â€%s\n", name);
+#define TEST_DESC(name, ...) printf("test â€" name "\n", __VA_ARGS__);
 
 #define QL_TEST_VERBOSE 0
 
