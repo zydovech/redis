@@ -93,7 +93,11 @@ typedef struct aeTimeEvent {
     aeEventFinalizerProc *finalizerProc;
     //客户端数据
     void *clientData;
+<<<<<<< HEAD
     //下一个时间事件
+=======
+    struct aeTimeEvent *prev;
+>>>>>>> e504583b7806d946da9c3627784d551a742be4d0
     struct aeTimeEvent *next;
 } aeTimeEvent;
 
