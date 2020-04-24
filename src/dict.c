@@ -754,7 +754,7 @@ static unsigned long rev(unsigned long v) {
 /* dictScan() is used to iterate over the elements of a dictionary.
  *
  * Iterating works the following way:
- *
+ * 第一次cursor
  * 1) Initially you call the function using a cursor (v) value of 0.
  * 2) The function performs one step of the iteration, and returns the
  *    new cursor value you must use in the next call.
@@ -845,9 +845,10 @@ unsigned long dictScan(dict *d,
     const dictEntry *de, *next;
     unsigned long m0, m1;
 
+    //没有数据了，则直接返回
     if (dictSize(d) == 0) return 0;
 
-    if (!dictIsRehashing(d)) {
+    if (!dictIsRehashing(d)) { //不是处于rehash阶段
         t0 = &(d->ht[0]);
         m0 = t0->sizemask;
 

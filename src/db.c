@@ -610,7 +610,7 @@ int parseScanCursorOrReply(client *c, robj *o, unsigned long *cursor) {
     return C_OK;
 }
 
-/* This command implements SCAN, HSCAN and SSCAN commands.
+/* This command implements SCAN, HSCAN and SSCAN commands. 用来处理scan hscan sscan
  * If object 'o' is passed, then it must be a Hash or Set object, otherwise
  * if 'o' is NULL the command will operate on the dictionary associated with
  * the current database.
@@ -623,6 +623,7 @@ int parseScanCursorOrReply(client *c, robj *o, unsigned long *cursor) {
  * of every element on the Hash. */
 void scanGenericCommand(client *c, robj *o, unsigned long cursor) {
     int i, j;
+
     list *keys = listCreate();
     listNode *node, *nextnode;
     long count = 10;
@@ -631,11 +632,11 @@ void scanGenericCommand(client *c, robj *o, unsigned long cursor) {
     dict *ht;
 
     /* Object must be NULL (to iterate keys names), or the type of the object
-     * must be Set, Sorted Set, or Hash. */
+     * must be Set, Sorted Set, or Hash. 只有在类型是SET HASH ZSET的时候，o才不为空*/
     serverAssert(o == NULL || o->type == OBJ_SET || o->type == OBJ_HASH ||
                 o->type == OBJ_ZSET);
 
-    /* Set i to the first option argument. The previous one is the cursor. */
+    /* Set i to the first option argument. The previous one is the cursor. 调到可选参数里面*/
     i = (o == NULL) ? 2 : 3; /* Skip the key argument if needed. */
 
     /* Step 1: Parse options. */
@@ -648,7 +649,7 @@ void scanGenericCommand(client *c, robj *o, unsigned long cursor) {
                 goto cleanup;
             }
 
-            if (count < 1) {
+            if (count < 1) { //count 需要大于1
                 addReply(c,shared.syntaxerr);
                 goto cleanup;
             }
@@ -659,7 +660,7 @@ void scanGenericCommand(client *c, robj *o, unsigned long cursor) {
             patlen = sdslen(pat);
 
             /* The pattern always matches if it is exactly "*", so it is
-             * equivalent to disabling it. */
+             * equivalent to disabling it. 对于*来说，就相当于没有pattern */
             use_pattern = !(pat[0] == '*' && patlen == 1);
 
             i += 2;
@@ -679,7 +680,7 @@ void scanGenericCommand(client *c, robj *o, unsigned long cursor) {
 
     /* Handle the case of a hash table. */
     ht = NULL;
-    if (o == NULL) {
+    if (o == NULL) { //如果是空的，则作用于全局
         ht = c->db->dict;
     } else if (o->type == OBJ_SET && o->encoding == OBJ_ENCODING_HT) {
         ht = o->ptr;
@@ -697,7 +698,7 @@ void scanGenericCommand(client *c, robj *o, unsigned long cursor) {
         /* We set the max number of iterations to ten times the specified
          * COUNT, so if the hash table is in a pathological state (very
          * sparsely populated) we avoid to block too much time at the cost
-         * of returning no or very few elements. */
+         * of returning no or very few elements. 最大遍历次数，也就是最多查找这么多个槽。*/
         long maxiterations = count*10;
 
         /* We pass two pointers to the callback: the list to which it will
@@ -706,6 +707,11 @@ void scanGenericCommand(client *c, robj *o, unsigned long cursor) {
         privdata[0] = keys;
         privdata[1] = o;
         do {
+            //dictScan一次遍历一个槽
+            /*
+             * 循环条件
+             * 1. cursor不为0、maxiterations不为0，还没有达到要求的大小
+             * */
             cursor = dictScan(ht, cursor, scanCallback, NULL, privdata);
         } while (cursor &&
               maxiterations-- &&

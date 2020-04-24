@@ -218,7 +218,7 @@ int setTypeRandomElement(robj *setobj, sds *sdsele, int64_t *llele) {
     }
     return setobj->encoding;
 }
-
+//获取set类型的size
 unsigned long setTypeSize(const robj *subject) {
     if (subject->encoding == OBJ_ENCODING_HT) {
         return dictSize((const dict*)subject->ptr);
@@ -328,25 +328,27 @@ void smoveCommand(client *c) {
     }
 
     /* If the source key has the wrong type, or the destination key
-     * is set and has the wrong type, return with an error. */
+     * is set and has the wrong type, return with an error.
+     * 类型不对，也直接返回 srcset必须存在，dstset可以不存在*/
     if (checkType(c,srcset,OBJ_SET) ||
         (dstset && checkType(c,dstset,OBJ_SET))) return;
 
     /* If srcset and dstset are equal, SMOVE is a no-op */
     if (srcset == dstset) {
+        //如果两个key是相同的，也直接返回
         addReply(c,setTypeIsMember(srcset,ele->ptr) ?
             shared.cone : shared.czero);
         return;
     }
 
-    /* If the element cannot be removed from the src set, return 0. */
+    /* If the element cannot be removed from the src set, return 0. 如果srcset里面都没有的话，则直接返回0 */
     if (!setTypeRemove(srcset,ele->ptr)) {
         addReply(c,shared.czero);
         return;
     }
     notifyKeyspaceEvent(NOTIFY_SET,"srem",c->argv[1],c->db->id);
 
-    /* Remove the src set from the database when empty */
+    /* Remove the src set from the database when empty 如果set已经空了，则删除*/
     if (setTypeSize(srcset) == 0) {
         dbDelete(c->db,c->argv[1]);
         notifyKeyspaceEvent(NOTIFY_GENERIC,"del",c->argv[1],c->db->id);
@@ -420,7 +422,7 @@ void spopWithCountCommand(client *c) {
 
     /* If count is zero, serve an empty multibulk ASAP to avoid special
      * cases later. */
-    if (count == 0) {
+    if (count == 0) { //如果是0的话，就返回空的
         addReply(c,shared.emptymultibulk);
         return;
     }
@@ -865,14 +867,14 @@ void sinterGenericCommand(client *c, robj **setkeys,
                     sdsfree(elesds);
                 }
             } else if (encoding == OBJ_ENCODING_HT) {
-                if (!setTypeIsMember(sets[j],elesds)) {
+                if (!setTypeIsMember(sets[j],elesds)) {//如果不存在则直接退出，因为不存在的话，就不会加入到最后的返回里面
                     break;
                 }
             }
         }
 
         /* Only take action when all sets contain the member */
-        if (j == setnum) {
+        if (j == setnum) {//只有当在所有都出现的时候，才那啥
             if (!dstkey) {
                 if (encoding == OBJ_ENCODING_HT)
                     addReplyBulkCBuffer(c,elesds,sdslen(elesds));
@@ -1107,7 +1109,7 @@ void sdiffstoreCommand(client *c) {
 void sscanCommand(client *c) {
     robj *set;
     unsigned long cursor;
-
+    //解析scan的参数
     if (parseScanCursorOrReply(c,c->argv[2],&cursor) == C_ERR) return;
     if ((set = lookupKeyReadOrReply(c,c->argv[1],shared.emptyscan)) == NULL ||
         checkType(c,set,OBJ_SET)) return;

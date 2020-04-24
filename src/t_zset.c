@@ -1665,12 +1665,15 @@ void zremCommand(client *c) {
     robj *zobj;
     int deleted = 0, keyremoved = 0, j;
 
+    //检查是否存在，以及类型是否正确
     if ((zobj = lookupKeyWriteOrReply(c,key,shared.czero)) == NULL ||
         checkType(c,zobj,OBJ_ZSET)) return;
 
     for (j = 2; j < c->argc; j++) {
         if (zsetDel(zobj,c->argv[j]->ptr)) deleted++;
+
         if (zsetLength(zobj) == 0) {
+            //如果len为空了，则删除key
             dbDelete(c->db,key);
             keyremoved = 1;
             break;
@@ -1722,7 +1725,7 @@ void zremrangeGenericCommand(client *c, int rangetype) {
         checkType(c,zobj,OBJ_ZSET)) goto cleanup;
 
     if (rangetype == ZRANGE_RANK) {
-        /* Sanitize indexes. */
+        /* Sanitize indexes. 调整index*/
         llen = zsetLength(zobj);
         if (start < 0) start = llen+start;
         if (end < 0) end = llen+end;
@@ -1730,10 +1733,11 @@ void zremrangeGenericCommand(client *c, int rangetype) {
 
         /* Invariant: start >= 0, so this test will be true when end < 0.
          * The range is empty when start > end or start >= length. */
-        if (start > end || start >= llen) {
+        if (start > end || start >= llen) { //start超过end,或者start比元素多，则直接返回
             addReply(c,shared.czero);
             goto cleanup;
         }
+        //如果end大于len,则把end指向末尾
         if (end >= llen) end = llen-1;
     }
 

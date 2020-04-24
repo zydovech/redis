@@ -1,0 +1,96 @@
+# The set of languages for which implicit dependencies are needed:
+set(CMAKE_DEPENDS_LANGUAGES
+  "C"
+  )
+# The set of files for implicit dependencies of each language:
+set(CMAKE_DEPENDS_CHECK_C
+  "/Users/zhouyang10427/code/redis/src/adlist.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/adlist.c.o"
+  "/Users/zhouyang10427/code/redis/src/ae.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/ae.c.o"
+  "/Users/zhouyang10427/code/redis/src/ae_kqueue.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/ae_kqueue.c.o"
+  "/Users/zhouyang10427/code/redis/src/anet.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/anet.c.o"
+  "/Users/zhouyang10427/code/redis/src/aof.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/aof.c.o"
+  "/Users/zhouyang10427/code/redis/src/bio.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/bio.c.o"
+  "/Users/zhouyang10427/code/redis/src/bitops.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/bitops.c.o"
+  "/Users/zhouyang10427/code/redis/src/blocked.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/blocked.c.o"
+  "/Users/zhouyang10427/code/redis/src/childinfo.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/childinfo.c.o"
+  "/Users/zhouyang10427/code/redis/src/cluster.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/cluster.c.o"
+  "/Users/zhouyang10427/code/redis/src/config.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/config.c.o"
+  "/Users/zhouyang10427/code/redis/src/crc16.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/crc16.c.o"
+  "/Users/zhouyang10427/code/redis/src/crc64.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/crc64.c.o"
+  "/Users/zhouyang10427/code/redis/src/db.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/db.c.o"
+  "/Users/zhouyang10427/code/redis/src/debug.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/debug.c.o"
+  "/Users/zhouyang10427/code/redis/src/defrag.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/defrag.c.o"
+  "/Users/zhouyang10427/code/redis/src/dict.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/dict.c.o"
+  "/Users/zhouyang10427/code/redis/src/endianconv.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/endianconv.c.o"
+  "/Users/zhouyang10427/code/redis/src/evict.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/evict.c.o"
+  "/Users/zhouyang10427/code/redis/src/expire.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/expire.c.o"
+  "/Users/zhouyang10427/code/redis/src/geo.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/geo.c.o"
+  "/Users/zhouyang10427/code/redis/src/geohash.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/geohash.c.o"
+  "/Users/zhouyang10427/code/redis/src/geohash_helper.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/geohash_helper.c.o"
+  "/Users/zhouyang10427/code/redis/src/hyperloglog.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/hyperloglog.c.o"
+  "/Users/zhouyang10427/code/redis/src/intset.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/intset.c.o"
+  "/Users/zhouyang10427/code/redis/src/latency.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/latency.c.o"
+  "/Users/zhouyang10427/code/redis/src/lazyfree.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/lazyfree.c.o"
+  "/Users/zhouyang10427/code/redis/src/listpack.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/listpack.c.o"
+  "/Users/zhouyang10427/code/redis/src/localtime.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/localtime.c.o"
+  "/Users/zhouyang10427/code/redis/src/lolwut.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/lolwut.c.o"
+  "/Users/zhouyang10427/code/redis/src/lolwut5.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/lolwut5.c.o"
+  "/Users/zhouyang10427/code/redis/src/lzf_c.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/lzf_c.c.o"
+  "/Users/zhouyang10427/code/redis/src/lzf_d.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/lzf_d.c.o"
+  "/Users/zhouyang10427/code/redis/src/memtest.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/memtest.c.o"
+  "/Users/zhouyang10427/code/redis/src/module.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/module.c.o"
+  "/Users/zhouyang10427/code/redis/src/multi.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/multi.c.o"
+  "/Users/zhouyang10427/code/redis/src/networking.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/networking.c.o"
+  "/Users/zhouyang10427/code/redis/src/notify.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/notify.c.o"
+  "/Users/zhouyang10427/code/redis/src/object.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/object.c.o"
+  "/Users/zhouyang10427/code/redis/src/pqsort.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/pqsort.c.o"
+  "/Users/zhouyang10427/code/redis/src/pubsub.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/pubsub.c.o"
+  "/Users/zhouyang10427/code/redis/src/quicklist.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/quicklist.c.o"
+  "/Users/zhouyang10427/code/redis/src/rand.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/rand.c.o"
+  "/Users/zhouyang10427/code/redis/src/rax.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/rax.c.o"
+  "/Users/zhouyang10427/code/redis/src/rdb.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/rdb.c.o"
+  "/Users/zhouyang10427/code/redis/src/redis-check-aof.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/redis-check-aof.c.o"
+  "/Users/zhouyang10427/code/redis/src/redis-check-rdb.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/redis-check-rdb.c.o"
+  "/Users/zhouyang10427/code/redis/src/release.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/release.c.o"
+  "/Users/zhouyang10427/code/redis/src/replication.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/replication.c.o"
+  "/Users/zhouyang10427/code/redis/src/rio.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/rio.c.o"
+  "/Users/zhouyang10427/code/redis/src/scripting.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/scripting.c.o"
+  "/Users/zhouyang10427/code/redis/src/sds.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/sds.c.o"
+  "/Users/zhouyang10427/code/redis/src/sentinel.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/sentinel.c.o"
+  "/Users/zhouyang10427/code/redis/src/server.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/server.c.o"
+  "/Users/zhouyang10427/code/redis/src/setproctitle.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/setproctitle.c.o"
+  "/Users/zhouyang10427/code/redis/src/sha1.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/sha1.c.o"
+  "/Users/zhouyang10427/code/redis/src/siphash.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/siphash.c.o"
+  "/Users/zhouyang10427/code/redis/src/slowlog.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/slowlog.c.o"
+  "/Users/zhouyang10427/code/redis/src/sort.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/sort.c.o"
+  "/Users/zhouyang10427/code/redis/src/sparkline.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/sparkline.c.o"
+  "/Users/zhouyang10427/code/redis/src/syncio.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/syncio.c.o"
+  "/Users/zhouyang10427/code/redis/src/t_hash.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/t_hash.c.o"
+  "/Users/zhouyang10427/code/redis/src/t_list.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/t_list.c.o"
+  "/Users/zhouyang10427/code/redis/src/t_set.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/t_set.c.o"
+  "/Users/zhouyang10427/code/redis/src/t_stream.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/t_stream.c.o"
+  "/Users/zhouyang10427/code/redis/src/t_string.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/t_string.c.o"
+  "/Users/zhouyang10427/code/redis/src/t_zset.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/t_zset.c.o"
+  "/Users/zhouyang10427/code/redis/src/util.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/util.c.o"
+  "/Users/zhouyang10427/code/redis/src/ziplist.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/ziplist.c.o"
+  "/Users/zhouyang10427/code/redis/src/zipmap.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/zipmap.c.o"
+  "/Users/zhouyang10427/code/redis/src/zmalloc.c" "/Users/zhouyang10427/code/redis/CMakeFiles/redis-server.dir/src/zmalloc.c.o"
+  )
+set(CMAKE_C_COMPILER_ID "AppleClang")
+
+# The include file search paths:
+set(CMAKE_C_TARGET_INCLUDE_PATH
+  "deps/linenoise"
+  "deps/hiredis"
+  "deps/lua/src"
+  )
+
+# Targets to which this target links.
+set(CMAKE_TARGET_LINKED_INFO_FILES
+  "/Users/zhouyang10427/code/redis/deps/lua/CMakeFiles/lua.dir/DependInfo.cmake"
+  "/Users/zhouyang10427/code/redis/deps/linenoise/CMakeFiles/linenoise.dir/DependInfo.cmake"
+  "/Users/zhouyang10427/code/redis/deps/hiredis/CMakeFiles/hiredis.dir/DependInfo.cmake"
+  )
+
+# Fortran module output directory.
+set(CMAKE_Fortran_TARGET_MODULE_DIR "")
